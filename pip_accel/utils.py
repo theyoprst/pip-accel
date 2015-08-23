@@ -17,7 +17,6 @@ with any single module.
 import errno
 import os
 import platform
-import pwd
 import re
 import sys
 
@@ -27,7 +26,7 @@ from pkg_resources import WorkingSet
 
 # Look up the home directory of the effective user id so we can generate
 # pathnames relative to the home directory.
-HOME = pwd.getpwuid(os.getuid()).pw_dir
+HOME = os.path.expanduser('~')
 
 def compact(text, **kw):
     """
