@@ -208,6 +208,14 @@ class Config(object):
         return self.get(property_name='binary_cache',
                         default=os.path.join(self.data_directory, 'binaries'))
 
+    def is_root_user(self):
+        try:
+            return os.getuid() == 0
+        except AttributeError:
+            # There is no getuid on Windows, assume that there is no
+            # root user.
+            return False
+
     @cached_property
     def data_directory(self):
         """
@@ -220,7 +228,7 @@ class Config(object):
         return parse_path(self.get(property_name='data_directory',
                                    environment_variable='PIP_ACCEL_CACHE',
                                    configuration_option='data-directory',
-                                   default='/var/cache/pip-accel' if os.getuid() == 0 else '~/.pip-accel'))
+                                   default='/var/cache/pip-accel' if self.is_root_user() else '~/.pip-accel'))
 
     @cached_property
     def on_debian(self):
