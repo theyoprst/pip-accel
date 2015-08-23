@@ -105,6 +105,16 @@ class PipAccelerator(object):
         # temporary sources after pip-accel has finished.
         self.reported_requirements = []
 
+    def samedir(self, file_path1, file_path2):
+        """
+        TODO: Write docstring.
+        """
+        try:
+            return os.path.samefile(file_path1, file_path2)
+        except AttributeError:
+            # On Windows there is no os.path.samefile function.
+            return os.path.realpath(file_path1) == os.path.realpath(file_path2)
+
     def validate_environment(self):
         """
         Make sure :py:data:`sys.prefix` matches ``$VIRTUAL_ENV`` (if defined).
@@ -122,7 +132,7 @@ class PipAccelerator(object):
                 # Because os.path.samefile() itself can raise exceptions, e.g.
                 # when $VIRTUAL_ENV points to a non-existing directory, we use
                 # an assertion to allow us to use a single code path :-)
-                assert os.path.samefile(sys.prefix, environment)
+                assert self.samedir(sys.prefix, environment)
             except Exception:
                 raise EnvironmentMismatchError("""
                     You are trying to install packages in environment #1 which
